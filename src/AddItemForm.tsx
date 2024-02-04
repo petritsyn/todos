@@ -1,16 +1,25 @@
-import { ChangeEvent, KeyboardEvent, useState, FC } from "react"
+import React, {ChangeEvent, KeyboardEvent, useState} from 'react';
 
-type PropsType = {
-    callBack: (title: string) => void
+type AddItemFormPropsType = {
+    addItem: (title: string) => void
 }
 
-export const AddItemForm: FC<PropsType> = ({ callBack }) => {
+export function AddItemForm(props: AddItemFormPropsType) {
 
-    let [title, setTitle] = useState("");
-    let [error, setError] = useState<string | null>(null);
+    let [title, setTitle] = useState("")
+    let [error, setError] = useState<string | null>(null)
+
+    const addItem = () => {
+        if (title.trim() !== "") {
+            props.addItem(title);
+            setTitle("");
+        } else {
+            setError("Title is required");
+        }
+    }
 
     const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-        setTitle(e.target.value)
+        setTitle(e.currentTarget.value)
     }
 
     const onKeyPressHandler = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -20,22 +29,14 @@ export const AddItemForm: FC<PropsType> = ({ callBack }) => {
         }
     }
 
-    const addItem = () => {
-        let newTitle = title.trim();
-        if (newTitle !== "") {
-            callBack(title);
-            setTitle("");
-        } else {
-            setError("Title is required");
-        }
-    }
-
-    return <>
-        {error && <div className="error-message">{error}</div>}
-        <input type="text"
-            onChange={onChangeHandler}
-            value={title}
-            onKeyPress={onKeyPressHandler} />
+    return <div>
+        <input value={title}
+               onChange={onChangeHandler}
+               onKeyPress={onKeyPressHandler}
+               className={error ? "error" : ""}
+        />
         <button onClick={addItem}>+</button>
-    </>
+
+        {error && <div className="error-message">{error}</div>}
+    </div>
 }

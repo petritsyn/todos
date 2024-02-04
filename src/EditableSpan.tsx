@@ -1,28 +1,27 @@
-import { FC, useState, ChangeEvent } from 'react'
+import React, {ChangeEvent, useState} from 'react';
 
-type PropsType = {
+type EditableSpanPropsType = {
     value: string
-    callBack: (newTitle: string) => void
+    onChange: (newValue: string) => void
 }
 
-export const EditableSpan: FC<PropsType> = ({ value, callBack }) => {
+export function EditableSpan(props: EditableSpanPropsType) {
     let [editMode, setEditMode] = useState(false);
-    let [title, setTitle] = useState(value);
+    let [title, setTitle] = useState(props.value);
 
-    const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    const activateEditMode = () => {
+        setEditMode(true);
+        setTitle(props.value);
+    }
+    const activateViewMode = () => {
+        setEditMode(false);
+        props.onChange(title);
+    }
+    const changeTitle = (e: ChangeEvent<HTMLInputElement>) => {
         setTitle(e.currentTarget.value)
     }
-    const editModeOn = () => {
-        setEditMode(true)
-    }
-    const editModeOff = () => {
-        setEditMode(false)
-        callBack(title)
-    }
 
-    {
-        return editMode
-            ? <input value={title} onChange={onChangeHandler} onBlur={editModeOff} autoFocus></input>
-            : <span onDoubleClick={editModeOn}>{value}</span>
-    }
+    return editMode
+        ? <input value={title} onChange={changeTitle} autoFocus onBlur={activateViewMode}/>
+        : <span onDoubleClick={activateEditMode}>{props.value}</span>
 }
